@@ -2,7 +2,9 @@ package ohnosequencesBundles.statika
 
 import ohnosequences.statika._
 import java.io.File
+import TrimmomaticDSL._
 
+/* Bundle */
 abstract class Trimmomatic(val version: String) extends Bundle() { trimmomatic =>
 
   lazy val baseName = s"Trimmomatic-${version}"
@@ -17,5 +19,12 @@ abstract class Trimmomatic(val version: String) extends Bundle() { trimmomatic =
     downloadZip -&-
     cmd("unzip")(trimmomaticZip)
 
-  def run(args: String*): CmdInstructions = cmd("java")("-jar", trimmomatic.jar.getCanonicalPath, args: _*)
+  def withArgs(args: Seq[String]): Seq[String] = Seq("java", "-jar", trimmomatic.jar.getCanonicalPath) ++ args
+
+  def apply(
+    threads: Option[Int]   = None,
+    phred:   Option[Phred] = None,
+    trimlog: Option[File]  = None
+  ): TrimmomaticCommand =
+     TrimmomaticCommand(trimmomatic)(threads, phred, trimlog)
 }
