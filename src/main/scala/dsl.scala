@@ -153,42 +153,42 @@ case object TrimmomaticDSL {
   case object TOPHRED64 extends TrimmingStep()
 
 }
-import TrimmomaticDSL._
 
+trait TrimmomaticCommand {
+  import TrimmomaticDSL._
 
-/* Command constructor */
-case class TrimmomaticCommand(trimmomatic: Trimmomatic)(basicOpts: BasicOption*)(steps: TrimmingStep*) {
+  val jar: File
+
+  def withArgs(args: Seq[String]): Seq[String] = Seq("java", "-jar", jar.getCanonicalPath) ++ args
 
   private def paths(files: File*) = files.map { _.getCanonicalPath.toString }
 
   /* For single-ended data, one input and one output file are specified. The required processing steps (trimming, cropping, adapter clipping etc.) are specified as additional arguments after the input/output files. */
-  def singleEnd(
+  def singleEnd(basicOpts: BasicOption*)(steps: TrimmingStep*)(
     input: File,
     output: File
-  ): Seq[String] =
-    trimmomatic.withArgs(
-      Seq("SE") ++
-      basicOpts.flatMap(_.parts) ++
-      paths(input, output) ++
-      steps.map(_.toString)
-    )
+  ): Seq[String] = this.withArgs(
+    Seq("SE") ++
+    basicOpts.flatMap(_.parts) ++
+    paths(input, output) ++
+    steps.map(_.toString)
+  )
 
   /* For paired-end data, two input files, and 4 output files are specified, 2 for the 'paired' output where both reads survived the processing, and 2 for corresponding 'unpaired' output where a read survived, but the partner read did not. */
-  def pairedEnd(
-    input1: File, input2: File
-  )(pairedOutput1: File, unpairedOutput1: File
-  )(pairedOutput2: File, unpairedOutput2: File
-  ): Seq[String] =
-    trimmomatic.withArgs(
-      Seq("PE") ++
-      basicOpts.flatMap(_.parts) ++
-      paths(
-        input1, input2,
-        pairedOutput1, unpairedOutput1,
-        pairedOutput2, unpairedOutput2
-      ) ++
-      steps.map(_.toString)
-    )
+  def pairedEnd(basicOpts: BasicOption*)(steps: TrimmingStep*)(
+    input1: File, input2: File,
+    pairedOutput1: File, unpairedOutput1: File,
+    pairedOutput2: File, unpairedOutput2: File
+  ): Seq[String] = this.withArgs(
+    Seq("PE") ++
+    basicOpts.flatMap(_.parts) ++
+    paths(
+      input1, input2,
+      pairedOutput1, unpairedOutput1,
+      pairedOutput2, unpairedOutput2
+    ) ++
+    steps.map(_.toString)
+  )
 
   // TODO: basenames for input/output and a way to get full names
 }
