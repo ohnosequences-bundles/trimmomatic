@@ -4,7 +4,7 @@ import java.io.File
 
 /* ## Mini DSL for Trimmomatic
 
-Note, that the comments here are copied from the [Timmomatic Manual v0.32](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf). For More information refer to it and to the [Trimmomatic website](http://www.usadellab.org/cms/?page=trimmomatic).
+Note, that the comments here are copied from the [Trimmomatic Manual v0.32](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf). For More information refer to it and to the [Trimmomatic website](http://www.usadellab.org/cms/?page=trimmomatic).
 */
 case object TrimmomaticDSL {
 

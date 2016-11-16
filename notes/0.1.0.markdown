@@ -1,0 +1,1 @@
+This is the first release. It provides a Statika bundle to install Trimmomatic and a DSL to construct commands with well-typed arguments. It implements all options described in the [Trimmomatic Manual v0.32](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf).
