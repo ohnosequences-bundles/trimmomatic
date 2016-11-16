@@ -6,4 +6,4 @@
 [![](https://img.shields.io/badge/license-AGPLv3-blue.svg)](https://tldrlegal.com/license/gnu-affero-general-public-license-v3-%28agpl-3.0%29)
 [![](https://img.shields.io/badge/contact-gitter_chat-dd1054.svg)](https://gitter.im/ohnosequences-bundles/trimmomatic)
 
-A bundle for installing [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic).
+A bundle for installing [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) and a [DSL](docs/src/main/scala/dsl.scala.md) for constructing Trimmomatic commands.
