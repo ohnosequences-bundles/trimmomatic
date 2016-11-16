@@ -21,10 +21,10 @@ abstract class Trimmomatic(val version: String) extends Bundle() { trimmomatic =
 
   def withArgs(args: Seq[String]): Seq[String] = Seq("java", "-jar", trimmomatic.jar.getCanonicalPath) ++ args
 
-  def apply(
-    threads: Option[Int]   = None,
-    phred:   Option[Phred] = None,
-    trimlog: Option[File]  = None
-  ): TrimmomaticCommand =
-     TrimmomaticCommand(trimmomatic)(threads, phred, trimlog)
+  // def apply(
+  //   threads: Option[Int]   = None,
+  //   phred:   Option[Phred] = None,
+  //   trimlog: Option[File]  = None
+  // ): TrimmomaticCommand =
+  //    TrimmomaticCommand(trimmomatic)(threads, phred, trimlog)
 }

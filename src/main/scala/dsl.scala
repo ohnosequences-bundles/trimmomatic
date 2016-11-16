@@ -8,24 +8,25 @@ Note, that the comments here are copied from the [Timmomatic Manual v0.32](http:
 */
 case object TrimmomaticDSL {
 
+  /* Options that are accepted by any mode (single/paired end) */
+  sealed trait BasicOption { val parts: Seq[String] }
+
   /* Base quality encoding */
-  sealed trait Phred
+  sealed trait Phred extends BasicOption { lazy val parts = Seq(s"-${this}") }
   case object phred33 extends Phred
   case object phred64 extends Phred
   /* If no quality encoding is specified, it will be determined automatically (since version 0.32) */
 
-  implicit def phredToOption(p: Phred): Some[Phred] = Some(p)
-
-  def threads(t: Int): Some[Int] = Some(t)
-  def trimlog(f: File): Some[File] = Some(f)
+  case class threads(t: Int)  extends BasicOption { lazy val parts = Seq("-threads", t.toString) }
+  case class trimlog(f: File) extends BasicOption { lazy val parts = Seq("-trimlog", f.getCanonicalPath.toString) }
 
 
   /* ### Trimming Steps
 
     The different processing steps occur in the order in which the steps are specified on the command line. It is recommended in most cases that adapter clipping, if required, is done as early as possible, since correctly identifying adapters using partial matches is more difficult.
   */
-  sealed class TrimmingStep(opts: String*) { step: Product =>
-    override def toString = (step.productPrefix +: opts).mkString(":")
+  sealed class TrimmingStep(args: String*) { step: Product =>
+    override def toString = (step.productPrefix +: args).mkString(":")
   }
 
 
@@ -156,29 +157,18 @@ import TrimmomaticDSL._
 
 
 /* Command constructor */
-case class TrimmomaticCommand(
-  trimmomatic: Trimmomatic
-)(threads: Option[Int],
-  phred:   Option[Phred],
-  trimlog: Option[File]
-) {
+case class TrimmomaticCommand(trimmomatic: Trimmomatic)(basicOpts: BasicOption*)(steps: TrimmingStep*) {
 
-  def basicOpts: Seq[String] = Seq(
-    threads.map { t => Seq("-threads", t.toString) },
-      phred.map { p => Seq(s"-${p}") } ,
-    trimlog.map { f => Seq("-trimlog", f.getCanonicalPath.toString) }
-  ).flatten.flatten
-
-  private def paths(files: File*) = files.map { _.getCanonicalPath }
+  private def paths(files: File*) = files.map { _.getCanonicalPath.toString }
 
   /* For single-ended data, one input and one output file are specified. The required processing steps (trimming, cropping, adapter clipping etc.) are specified as additional arguments after the input/output files. */
   def singleEnd(
     input: File,
     output: File
-  )(steps: TrimmingStep*): Seq[String] =
+  ): Seq[String] =
     trimmomatic.withArgs(
       Seq("SE") ++
-      basicOpts ++
+      basicOpts.flatMap(_.parts) ++
       paths(input, output) ++
       steps.map(_.toString)
     )
@@ -188,10 +178,10 @@ case class TrimmomaticCommand(
     input1: File, input2: File
   )(pairedOutput1: File, unpairedOutput1: File
   )(pairedOutput2: File, unpairedOutput2: File
-  )(steps: TrimmingStep*): Seq[String] =
+  ): Seq[String] =
     trimmomatic.withArgs(
       Seq("PE") ++
-      basicOpts ++
+      basicOpts.flatMap(_.parts) ++
       paths(
         input1, input2,
         pairedOutput1, unpairedOutput1,
