@@ -1,8 +1,9 @@
+/* # Trimmomatic DSL */
 package ohnosequencesBundles.statika
 
 import java.io.File
 
-/* ## Mini DSL for Trimmomatic
+/* ## DSL for Trimmomatic options
 
 Note, that the comments here are copied from the [Trimmomatic Manual v0.32](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf). For More information refer to it and to the [Trimmomatic website](http://www.usadellab.org/cms/?page=trimmomatic).
 */
@@ -23,7 +24,7 @@ case object TrimmomaticDSL {
 
   /* ### Trimming Steps
 
-    The different processing steps occur in the order in which the steps are specified on the command line. It is recommended in most cases that adapter clipping, if required, is done as early as possible, since correctly identifying adapters using partial matches is more difficult.
+  The different processing steps occur in the order in which the steps are specified on the command line. It is recommended in most cases that adapter clipping, if required, is done as early as possible, since correctly identifying adapters using partial matches is more difficult.
   */
   sealed class TrimmingStep(args: String*) { step: Product =>
     override def toString = (step.productPrefix +: args).mkString(":")
@@ -32,7 +33,7 @@ case object TrimmomaticDSL {
 
   /* #### ILLUMINACLIP
 
-    This step is used to find and remove Illumina adapters.
+  This step is used to find and remove Illumina adapters.
   */
   case class ILLUMINACLIP(
     /* - Specifies the path to a fasta file containing all the adapters, PCR sequences etc */
@@ -62,7 +63,7 @@ case object TrimmomaticDSL {
 
   /* #### SLIDINGWINDOW
 
-    Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
+  Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
   */
   case class SLIDINGWINDOW(
     /* - Specifies the number of bases to average across */
@@ -77,7 +78,7 @@ case object TrimmomaticDSL {
 
   /* #### MAXINFO
 
-    Performs an adaptive quality trim, balancing the benefits of retaining longer reads against the costs of retaining bases with errors.
+  Performs an adaptive quality trim, balancing the benefits of retaining longer reads against the costs of retaining bases with errors.
   */
   case class MAXINFO(
     /* - Specifies the read length which is likely to allow the location of the read within the target sequence to be determined */
@@ -92,7 +93,7 @@ case object TrimmomaticDSL {
 
   /* #### LEADING
 
-    Remove low quality bases from the beginning. As long as a base has a value below this threshold the base is removed and the next base will be investigated.
+  Remove low quality bases from the beginning. As long as a base has a value below this threshold the base is removed and the next base will be investigated.
   */
   case class LEADING(
     /* - Specifies the minimum quality required to keep a base */
@@ -102,7 +103,7 @@ case object TrimmomaticDSL {
 
   /* #### TRAILING
 
-    Remove low quality bases from the end. As long as a base has a value below this threshold the base is removed and the next base (which as trimmomatic is starting from the 3‟ prime end would be base preceding the just removed base) will be investigated.
+  Remove low quality bases from the end. As long as a base has a value below this threshold the base is removed and the next base (which as trimmomatic is starting from the 3‟ prime end would be base preceding the just removed base) will be investigated.
   */
   case class TRAILING(
     /* - Specifies the minimum quality required to keep a base */
@@ -112,7 +113,7 @@ case object TrimmomaticDSL {
 
   /* #### CROP
 
-    Removes bases regardless of quality from the end of the read, so that the read has maximally the specified length after this step has been performed. Steps performed after CROP might of course further shorten the read.
+  Removes bases regardless of quality from the end of the read, so that the read has maximally the specified length after this step has been performed. Steps performed after CROP might of course further shorten the read.
   */
   case class CROP(
     /* - The number of bases to keep, from the end of the read */
@@ -122,7 +123,7 @@ case object TrimmomaticDSL {
 
   /* #### HEADCROP
 
-    Removes the specified number of bases, regardless of quality, from the beginning of the read.
+  Removes the specified number of bases, regardless of quality, from the beginning of the read.
   */
   case class HEADCROP(
     /* - The number of bases to remove from the start of the read */
@@ -131,7 +132,7 @@ case object TrimmomaticDSL {
 
   /* #### MINLEN
 
-    This module removes reads that fall below the specified minimal length. If required, it should normally be after all other processing steps.
+  This module removes reads that fall below the specified minimal length. If required, it should normally be after all other processing steps.
   */
   case class MINLEN(
     /* - Specifies the minimum length of reads to be kept */
@@ -141,19 +142,23 @@ case object TrimmomaticDSL {
 
   /* #### TOPHRED33
 
-    This (re)encodes the quality part of the FASTQ file to base 33.
+  This (re)encodes the quality part of the FASTQ file to base 33.
   */
   case object TOPHRED33 extends TrimmingStep()
 
 
   /* #### TOPHRED64
 
-    This (re)encodes the quality part of the FASTQ file to base 64.
+  This (re)encodes the quality part of the FASTQ file to base 64.
   */
   case object TOPHRED64 extends TrimmingStep()
 
 }
 
+/* ## DSL for Trimmomatic command
+
+This trait provides methods for constructing complete Trimmomatic commands (represented as `Seq[String]`) ready to be ran.
+*/
 trait TrimmomaticCommand {
   import TrimmomaticDSL._
 

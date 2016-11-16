@@ -1,3 +1,4 @@
+# Trimmomatic DSL
 
 ```scala
 package ohnosequencesBundles.statika
@@ -5,7 +6,7 @@ package ohnosequencesBundles.statika
 import java.io.File
 ```
 
-## Mini DSL for Trimmomatic
+## DSL for Trimmomatic options
 
 Note, that the comments here are copied from the [Trimmomatic Manual v0.32](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf). For More information refer to it and to the [Trimmomatic website](http://www.usadellab.org/cms/?page=trimmomatic).
 
@@ -37,7 +38,7 @@ If no quality encoding is specified, it will be determined automatically (since 
 
 ### Trimming Steps
 
-    The different processing steps occur in the order in which the steps are specified on the command line. It is recommended in most cases that adapter clipping, if required, is done as early as possible, since correctly identifying adapters using partial matches is more difficult.
+  The different processing steps occur in the order in which the steps are specified on the command line. It is recommended in most cases that adapter clipping, if required, is done as early as possible, since correctly identifying adapters using partial matches is more difficult.
 
 
 ```scala
@@ -48,7 +49,7 @@ If no quality encoding is specified, it will be determined automatically (since 
 
 #### ILLUMINACLIP
 
-    This step is used to find and remove Illumina adapters.
+  This step is used to find and remove Illumina adapters.
 
 
 ```scala
@@ -102,7 +103,7 @@ Two optional parameters for palindrome mode only:
 
 #### SLIDINGWINDOW
 
-    Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
+  Perform a sliding window trimming, cutting once the average quality within the window falls below a threshold. By considering multiple bases, a single poor quality base will not cause the removal of high quality data later in the read.
 
 
 ```scala
@@ -127,7 +128,7 @@ Two optional parameters for palindrome mode only:
 
 #### MAXINFO
 
-    Performs an adaptive quality trim, balancing the benefits of retaining longer reads against the costs of retaining bases with errors.
+  Performs an adaptive quality trim, balancing the benefits of retaining longer reads against the costs of retaining bases with errors.
 
 
 ```scala
@@ -152,7 +153,7 @@ Two optional parameters for palindrome mode only:
 
 #### LEADING
 
-    Remove low quality bases from the beginning. As long as a base has a value below this threshold the base is removed and the next base will be investigated.
+  Remove low quality bases from the beginning. As long as a base has a value below this threshold the base is removed and the next base will be investigated.
 
 
 ```scala
@@ -168,7 +169,7 @@ Two optional parameters for palindrome mode only:
 
 #### TRAILING
 
-    Remove low quality bases from the end. As long as a base has a value below this threshold the base is removed and the next base (which as trimmomatic is starting from the 3‟ prime end would be base preceding the just removed base) will be investigated.
+  Remove low quality bases from the end. As long as a base has a value below this threshold the base is removed and the next base (which as trimmomatic is starting from the 3‟ prime end would be base preceding the just removed base) will be investigated.
 
 
 ```scala
@@ -184,7 +185,7 @@ Two optional parameters for palindrome mode only:
 
 #### CROP
 
-    Removes bases regardless of quality from the end of the read, so that the read has maximally the specified length after this step has been performed. Steps performed after CROP might of course further shorten the read.
+  Removes bases regardless of quality from the end of the read, so that the read has maximally the specified length after this step has been performed. Steps performed after CROP might of course further shorten the read.
 
 
 ```scala
@@ -200,7 +201,7 @@ Two optional parameters for palindrome mode only:
 
 #### HEADCROP
 
-    Removes the specified number of bases, regardless of quality, from the beginning of the read.
+  Removes the specified number of bases, regardless of quality, from the beginning of the read.
 
 
 ```scala
@@ -216,7 +217,7 @@ Two optional parameters for palindrome mode only:
 
 #### MINLEN
 
-    This module removes reads that fall below the specified minimal length. If required, it should normally be after all other processing steps.
+  This module removes reads that fall below the specified minimal length. If required, it should normally be after all other processing steps.
 
 
 ```scala
@@ -232,7 +233,7 @@ Two optional parameters for palindrome mode only:
 
 #### TOPHRED33
 
-    This (re)encodes the quality part of the FASTQ file to base 33.
+  This (re)encodes the quality part of the FASTQ file to base 33.
 
 
 ```scala
@@ -241,14 +242,21 @@ Two optional parameters for palindrome mode only:
 
 #### TOPHRED64
 
-    This (re)encodes the quality part of the FASTQ file to base 64.
+  This (re)encodes the quality part of the FASTQ file to base 64.
 
 
 ```scala
   case object TOPHRED64 extends TrimmingStep()
 
 }
+```
 
+## DSL for Trimmomatic command
+
+This trait provides methods for constructing complete Trimmomatic commands (represented as `Seq[String]`) ready to be ran.
+
+
+```scala
 trait TrimmomaticCommand {
   import TrimmomaticDSL._
 
